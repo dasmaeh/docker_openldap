@@ -1,0 +1,5 @@
+backup/*
+!backup/.gitkeep
+config/my-env.yaml
+data/*
+!data/.gitkeep

@@ -1,0 +1,56 @@
+# !!! Currently not used !!!
+version: '2'
+
+services:
+    # dummy nginx for tls certificate generation
+    ldap_nginx_dummy:
+        container_name: ldap_nginx_dummy
+        image: nginx
+        restart: always
+        environment:
+            VIRTUAL_HOST: "ldap2.cbjck.de"
+            LETSENCRYPT_HOST: "ldap2.cbjck.de"
+            LETSENCRYPT_EMAIL: "admin@cbjck.de"
+#        volumes:
+#            - /data/ldap/nginx_conf.d:/etc/nginx/conf.d:ro
+        networks:
+            - outside
+    # ldap container
+    ldap:
+        container_name: ldap
+        image: dasmaeh/openldap
+        build: 
+            context: ./src/docker-openldap
+        restart: always
+        hostname: ldap2.cbjck.de
+        domainname: cbjck.de
+        volumes:
+            - ./data/database:/var/lib/ldap
+            - ./data/config:/etc/ldap/slapd.d
+            - /data/ssl/ldap2.cbjck.de:/container/service/slapd/assets/certs:ro
+            - ./environment:/container/environment/01-custom
+        networks:
+            - inside
+            - outside
+        ports:
+            - "389:389"
+            - "636:636"
+        command: "--loglevel trace --copy-service"
+
+    # ldap backup
+#    ldap_backup:
+#        container_name: ldap_backup
+#        image: osixia/openldap-backup
+#        environment:
+#            LDAP_BACKUP_DATA_CRON_EXP: "0 3 * * *"
+#            LDAP_BACKUP_CONFIG_CRON_EXP: "0 3 * * *" 
+#        volumes:
+#            - ./backup:/data/backup \
+#        networks:
+#            - inside
+
+networks:
+    inside:
+    outside:
+        external:
+            name: proxy-tier

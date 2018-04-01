@@ -1,0 +1,17 @@
+# security critical settings can be moved to my-env.startup.yaml which will be deleted after setup
+LDAP_TLS_CRT_FILENAME: fullchain.pem
+LDAP_TLS_KEY_FILENAME: key.pem
+LDAP_TLS_CA_CRT_FILENAME: chain.pem
+LDAP_TLS_VERIFY_CLIENT: never
+LDAP_TLS_ENFORCE: false
+LDAP_BACKEND: mdb
+LDAP_ORGANISATION: mydomain
+LDAP_DOMAIN: mydomain.tld
+LDAP_ADMIN_PASSWORD: "SomeVerySecurePassword"
+LDAP_CONFIG_PASSWORD: "AnotherVerySecurePassword"
+LDAP_REPLICATION: true
+LDAP_REPLICATION_HOSTS:
+   - ldap://ldap1.mydomain.tld
+   - ldap://ldap2.mydomain.tld
+LDAP_REPLICATION_CONFIG_SYNCPROV: binddn="cn=admin,cn=config" bindmethod=simple credentials=$LDAP_CONFIG_PASSWORD searchbase="cn=config" type=refreshAndPersist retry="60 +" timeout=1 starttls=critical
+LDAP_REPLICATION_DB_SYNCPROV: binddn="cn=admin,$LDAP_BASE_DN" bindmethod=simple credentials=$LDAP_ADMIN_PASSWORD searchbase="$LDAP_BASE_DN" type=refreshAndPersist interval=00:00:00:10 retry="60 +" timeout=1 starttls=critical
